@@ -7,6 +7,47 @@ const OWNER = 'Omerisra6';
 const TARGET_REPO = 'elementor-packages-test';
 const internalBotEmail = 'internal@elementor.com';
 
+/**
+ * Verify if the token has sufficient permissions to access the repository and its contents
+ */
+async function verifyTokenPermissions(octokit: ReturnType<typeof github.getOctokit>): Promise<boolean> {
+    try {
+        // Try to access the repository info
+        const { status: repoStatus } = await octokit.request('HEAD /repos/{owner}/{repo}', {
+            owner: OWNER,
+            repo: TARGET_REPO
+        });
+        
+        if (repoStatus !== 200) {
+            core.warning(`Token doesn't have permission to access the repository: ${OWNER}/${TARGET_REPO}`);
+            return false;
+        }
+        
+        // Try to access the packages directory
+        const { status: contentStatus } = await octokit.request('HEAD /repos/{owner}/{repo}/contents/{path}', {
+            owner: OWNER,
+            repo: TARGET_REPO,
+            path: 'packages'
+        });
+        
+        if (contentStatus !== 200) {
+            core.warning(`Token doesn't have permission to access the packages directory in ${OWNER}/${TARGET_REPO}`);
+            return false;
+        }
+        
+        core.info(`✅ Token has required permissions for ${OWNER}/${TARGET_REPO}`);
+        return true;
+    } catch (error: any) {
+        core.warning(`Token permission verification failed: ${error.message}`);
+        if (error.status === 404) {
+            core.warning('Repository or path not found - check if the repository exists and the token has access');
+        } else if (error.status === 401 || error.status === 403) {
+            core.warning('Authentication or authorization issue - check if the token has proper permissions');
+        }
+        return false;
+    }
+}
+
 export async function run() {
     try {
         const inputs = parseInputs();
@@ -14,6 +55,12 @@ export async function run() {
 
         // Initialize GitHub API client
         const octokit = github.getOctokit(token);
+        
+        // Verify token permissions
+        const hasPermissions = await verifyTokenPermissions(octokit);
+        if (!hasPermissions) {
+            throw new Error('Token does not have sufficient permissions. Cannot proceed.');
+        }
         
         // Get current repository context from GitHub context
         const currentRepo = github.context.repo;

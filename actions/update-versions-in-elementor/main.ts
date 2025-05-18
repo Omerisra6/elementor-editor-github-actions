@@ -24,8 +24,33 @@ export async function run() {
 
             for (const parentDir of packageDirectories) {
                 try {
-                    // First, get the list of package directories within the parent directory
+                    core.info(`Checking directory: ${parentDir} in ${OWNER}/${TARGET_REPO} on branch ${targetBranch}`);
+                    
+                    // First, check if the parent directory exists
+                    try {
+                        await octokit.rest.repos.getContent({
+                            owner: OWNER,
+                            repo: TARGET_REPO,
+                            path: parentDir,
+                            ref: targetBranch,
+                        });
+                    } catch (error: any) {
+                        if (error.status === 404) {
+                            core.warning(`Directory not found: ${parentDir} - Please check that this directory exists in ${OWNER}/${TARGET_REPO}`);
+                            continue; // Skip to the next parent directory
+                        }
+                        throw error; // Re-throw other errors
+                    }
+                    
+                    // Get the list of package directories within the parent directory
                     const packagesList = await getPackageDirectories(octokit, parentDir, targetBranch);
+                    
+                    if (packagesList.length === 0) {
+                        core.warning(`No package directories found in ${parentDir}`);
+                        continue;
+                    }
+
+                    core.info(`Found ${packagesList.length} package directories in ${parentDir}`);
 
                     // For each package directory, fetch the package.json
                     for (const packageDir of packagesList) {
@@ -49,7 +74,7 @@ export async function run() {
                                 core.warning(`Unexpected response format for ${fullPath}`);
                             }
                         } catch (error) {
-                            core.warning(`Failed to fetch package.json for directory: packages/${parentDir}/${packageDir}: ${error}`);
+                            core.warning(`Failed to fetch package.json for directory: ${parentDir}/${packageDir}: ${error}`);
                         }
                     }
                 } catch (error) {
@@ -134,7 +159,7 @@ export async function run() {
                     const { data: refData } = await octokit.rest.git.getRef({
                         owner: currentRepo.owner,
                         repo: currentRepo.repo,
-                        ref: `heads/${targetBranch}`
+                        ref: `heads/main`
                     });
                     
                     const currentSha = refData.object.sha;
@@ -184,7 +209,6 @@ async function getPackageDirectories(
     parentDir: string,
     targetBranch: string
 ): Promise<string[]> {
-    core.info(`Getting package directories for ${parentDir} from ${targetBranch} branch`);
     try {
         const response = await octokit.rest.repos.getContent({
             owner: OWNER,
@@ -202,8 +226,12 @@ async function getPackageDirectories(
 
         core.warning(`Unexpected response format for ${parentDir}`);
         return [];
-    } catch (error) {
-        core.warning(`Failed to list directories in ${parentDir}: ${error}`);
+    } catch (error: any) {
+        if (error.status === 404) {
+            core.warning(`Failed to list directories in ${parentDir}: Not Found - Directory might not exist or token might not have sufficient permissions`);
+        } else {
+            core.warning(`Failed to list directories in ${parentDir}: ${error}`);
+        }
         return [];
     }
 }

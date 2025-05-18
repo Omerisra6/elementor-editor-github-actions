@@ -28,12 +28,13 @@ export async function run() {
                     
                     // First, check if the parent directory exists
                     try {
-                        await octokit.rest.repos.getContent({
+                        await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
                             owner: OWNER,
                             repo: TARGET_REPO,
                             path: parentDir,
                             ref: targetBranch,
                         });
+                        
                     } catch (error: any) {
                         if (error.status === 404) {
                             core.info(`Directory not found: ${parentDir} - Please check that this directory exists in ${OWNER}/${TARGET_REPO}`);
@@ -210,7 +211,7 @@ async function getPackageDirectories(
     targetBranch: string
 ): Promise<string[]> {
     try {
-        const response = await octokit.rest.repos.getContent({
+        const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
             owner: OWNER,
             repo: TARGET_REPO,
             path: parentDir,

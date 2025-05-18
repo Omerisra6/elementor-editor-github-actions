@@ -184,6 +184,7 @@ async function getPackageDirectories(
     parentDir: string,
     targetBranch: string
 ): Promise<string[]> {
+    core.info(`Getting package directories for ${parentDir}`);
     try {
         const response = await octokit.rest.repos.getContent({
             owner: OWNER,

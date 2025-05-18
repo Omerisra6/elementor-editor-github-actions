@@ -95,10 +95,9 @@ export async function run() {
                 updatedPackageJson = JSON.parse(corePackageJsonContent);
                 
                 // Loop through the versions from the target repo
-                for (const [packagePath, version] of packageVersions.entries()) {
+                for (const [packageName, version] of packageVersions.entries()) {
                     // Extract package name from path (e.g., "packages/package-name" -> "package-name")
-                    const packageName = packagePath.split('/').pop() || '';
-                    const packageFullName = `@elementor/${packageName}`;
+                    const packageFullName = packageName;
                     
                     // Check if the package exists in dependencies or devDependencies
                     if (updatedPackageJson.dependencies?.[packageFullName]) {

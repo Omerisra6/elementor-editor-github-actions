@@ -71,7 +71,7 @@ export async function run() {
                     owner: currentRepo.owner,
                     repo: currentRepo.repo,
                     path: corePackageJsonPath,
-                    ref: targetBranch
+                    ref: 'main'
                 });
                 
                 if (!('content' in data) || !('sha' in data)) {
@@ -151,7 +151,7 @@ export async function run() {
                         message: 'chore: update package versions',
                         content: Buffer.from(content).toString('base64'),
                         sha: corePackageJsonSha,
-                        branch: targetBranch,
+                        branch: 'main',
                         committer: {
                             name: 'GitHub Actions',
                             email: internalBotEmail

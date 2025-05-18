@@ -36,7 +36,7 @@ export async function run() {
                         });
                     } catch (error: any) {
                         if (error.status === 404) {
-                            core.warning(`Directory not found: ${parentDir} - Please check that this directory exists in ${OWNER}/${TARGET_REPO}`);
+                            core.info(`Directory not found: ${parentDir} - Please check that this directory exists in ${OWNER}/${TARGET_REPO}`);
                             continue; // Skip to the next parent directory
                         }
                         throw error; // Re-throw other errors
@@ -46,7 +46,7 @@ export async function run() {
                     const packagesList = await getPackageDirectories(octokit, parentDir, targetBranch);
                     
                     if (packagesList.length === 0) {
-                        core.warning(`No package directories found in ${parentDir}`);
+                        core.info(`No package directories found in ${parentDir}`);
                         continue;
                     }
 

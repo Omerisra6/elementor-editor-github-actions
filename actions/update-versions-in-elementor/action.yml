@@ -1,0 +1,20 @@
+name: 'Update Versions in Elementor'
+description: 'Updates package versions in the Elementor repo based on versions from a target branch in the elementor-packages repo'
+
+inputs:
+  target-branch:
+    description: 'Branch name in elementor-packages to pull versions from'
+    required: false
+    default: 'main'
+  package-directories:
+    description: 'List of package directories to update (e.g., core, pro, libs)'
+    required: false
+    default: 'packages'
+  token:
+    description: 'GitHub token'
+    required: true
+    default: ${{ github.token }}
+
+runs:
+  using: node20
+  main: 'dist/index.js'

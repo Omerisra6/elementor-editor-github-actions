@@ -52,7 +52,10 @@ export async function run() {
             return versions;
         });
 
-        await core.group('Setting up git configuration', async () => {        
+        await core.group('Setting up git configuration', async () => {
+            await exec.exec('git', ['config', 'user.name', 'Omerisra6']);
+            await exec.exec('git', ['config', 'user.email', 'omerisraeli6@gmail.com']);
+            
             // Set the token for authentication
             const repoUrl = `https://x-access-token:${token}@github.com/${github.context.repo.owner}/${github.context.repo.repo}.git`;
             await exec.exec('git', ['remote', 'set-url', 'origin', repoUrl]);

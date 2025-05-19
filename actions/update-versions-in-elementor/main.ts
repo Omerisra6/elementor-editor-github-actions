@@ -53,8 +53,8 @@ export async function run() {
         });
 
         await core.group('Setting up git configuration', async () => {
-            await exec.exec('git', ['config', 'user.name', 'Omerisra6']);
-            await exec.exec('git', ['config', 'user.email', 'omerisraeli6@gmail.com']);
+            await exec.exec(`git config user.name "elementor internal"`);
+	        await exec.exec(`git config user.email ${internalBotEmail}`);
             
             // Set the token for authentication
             const repoUrl = `https://x-access-token:${token}@github.com/${github.context.repo.owner}/${github.context.repo.repo}.git`;
@@ -117,12 +117,10 @@ export async function run() {
                 
                 await exec.exec('git', ['commit', '-m', 'Tweak: Update package versions']);
                 
-                // Use the configured remote with token for authentication
                 await exec.exec('git', ['push', 'origin', 'HEAD:main']);
                 
                 core.info(`Successfully committed changes to main branch`);
             } catch (error) {
-                core.error(`Git command failed: ${error}`);
                 throw new Error(`Failed to commit changes: ${error}`);
             }
         });

@@ -57,7 +57,7 @@ export async function run() {
 	        await exec.exec(`git config user.email ${internalBotEmail}`);
             
             // Set the token for authentication
-            const repoUrl = `https://x-access-token:${token}@github.com/${github.context.repo.owner}/${github.context.repo.repo}.git`;
+            const repoUrl = `https://omerisra6:${token}@github.com/${github.context.repo.owner}/${github.context.repo.repo}.git`;
             await exec.exec('git', ['remote', 'set-url', 'origin', repoUrl]);
         });
 

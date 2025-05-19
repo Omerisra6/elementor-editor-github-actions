@@ -52,11 +52,6 @@ export async function run() {
             return versions;
         });
 
-        await core.group('Setting up git configuration', async () => {
-            await exec.exec('git', ['config', 'user.name', 'GitHub Actions']);
-            await exec.exec('git', ['config', 'user.email', internalBotEmail]);
-        });
-
         let hasUpdates = false;
 
         await core.group('Updating versions in core package.json', async () => {

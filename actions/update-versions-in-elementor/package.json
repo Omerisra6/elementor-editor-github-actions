@@ -11,7 +11,7 @@
 		"@elementor-editor-github-actions/utils": "*",
 		"@actions/core": "^1.11.1",
 		"@actions/exec": "^1.1.1",
-		"@actions/github": "^6.0.0",
+		"@actions/github": "^5.1.1",
 		"@actions/io": "^1.1.3",
 		"zod": "^3.24.2"
 	},

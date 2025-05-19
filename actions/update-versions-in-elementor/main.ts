@@ -5,8 +5,8 @@ import { z } from 'zod';
 import * as fs from 'fs/promises';
 import * as exec from '@actions/exec';
 
-const PACKAGES_OWNER = 'Omerisra6';
-const PACKAGES_REPO = 'elementor-packages-test';
+const PACKAGES_REPO = 'elementor-packages';
+const PACKAGES_FOLDER = 'packages';
 const internalBotEmail = 'internal@elementor.com';
 
 export async function run() {
@@ -29,9 +29,9 @@ export async function run() {
                 core.info(`Found ${packagesList.length} package directories in ${parentDir}`);
 
                 for (const packageDir of packagesList) {
-                    const fullPath = `${parentDir}/${packageDir}/package.json`;
+                    const fullPath = `${PACKAGES_FOLDER}/${parentDir}/${packageDir}/package.json`;
                     const response = await octokit.rest.repos.getContent({
-                        owner: PACKAGES_OWNER,
+                        owner: github.context.repo.owner,
                         repo: PACKAGES_REPO,
                         path: fullPath,
                         ref: targetBranch,
@@ -134,9 +134,9 @@ async function getPackageDirectories(
     targetBranch: string
 ): Promise<string[]> {
     const response = await octokit.rest.repos.getContent({
-        owner: PACKAGES_OWNER,
+        owner: github.context.repo.owner,
         repo: PACKAGES_REPO,
-        path: parentDir,
+        path: `${PACKAGES_FOLDER}/${parentDir}`,
         ref: targetBranch,
     });
 

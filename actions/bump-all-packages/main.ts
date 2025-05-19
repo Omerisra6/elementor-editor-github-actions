@@ -38,6 +38,15 @@ export async function run() {
             }
         });
         
+        await core.group('Installing dependencies', async () => {
+            try {
+                await exec.exec('npm', ['install', '--no-save', '@changesets/cli']);
+                core.info('Successfully installed @changesets/cli');
+            } catch (error) {
+                throw new Error(`Failed to install @changesets/cli: ${error}`);
+            }
+        });
+        
         await core.group('Bumping versions with changesets', async () => {
             try {
                 if (targetDirectories.length > 0) {
@@ -60,7 +69,8 @@ export async function run() {
                     if (packageNames.length > 0) {
                         core.info(`Found ${packageNames.length} packages to bump in target directories`);
                         
-                        await exec.exec('npx', ['changeset', 'add', '--bump', 'major', '--packages', ...packageNames, '-s', "Bump packages major version"]);
+                        const changesetPath = require.resolve('@changesets/cli/bin/cli.js');
+                        await exec.exec('node', [changesetPath, 'add', '--bump', 'major', '--packages', ...packageNames, '-s', "Bump packages major version"]);
                         
                         core.info('Successfully bumped versions using changesets with major strategy');
                     } else {

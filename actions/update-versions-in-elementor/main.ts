@@ -117,6 +117,7 @@ export async function run() {
                 
                 await exec.exec('git', ['commit', '-m', 'Tweak: Update package versions']);
                 await exec.exec( 'git', ['remote', '-v']);
+                await exec.exec('git', ['push', 'origin', 'HEAD:main']);
                 
                 core.info(`Successfully committed changes to main branch`);
             } catch (error) {

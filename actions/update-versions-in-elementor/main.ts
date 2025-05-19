@@ -53,14 +53,14 @@ export async function run() {
         });
 
         await core.group('Setting up git configuration', async () => {
-            await exec.exec(`git config user.name "elementorbot"`);
-	        await exec.exec(`git config user.email ${internalBotEmail}`);
-            
-            // Set the token for authentication
-            const repoUrl = `https://omerisra6:${token}@github.com/${github.context.repo.owner}/${github.context.repo.repo}.git`;
+            await exec.exec('git', ['config', 'user.name', 'elementorbot']);
+            await exec.exec('git', ['config', 'user.email', internalBotEmail]);
+        
+            // Set the token for authentication securely
+            const repoUrl = `https://x-access-token:${token}@github.com/${github.context.repo.owner}/${github.context.repo.repo}.git`;
             await exec.exec('git', ['remote', 'set-url', 'origin', repoUrl]);
         });
-
+        
         let hasUpdates = false;
 
         await core.group('Updating versions in core package.json', async () => {

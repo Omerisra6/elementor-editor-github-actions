@@ -55,7 +55,6 @@ export async function run() {
         await core.group('Setting up git configuration', async () => {
             await exec.exec(`git config user.name "elementorbot"`);
 	        await exec.exec(`git config user.email ${internalBotEmail}`);
-            core.info(`is token exists? ${!! token}`);
             
             // Set the token for authentication
             const repoUrl = `https://x-access-token:${token}@github.com/${github.context.repo.owner}/${github.context.repo.repo}.git`;
@@ -117,8 +116,7 @@ export async function run() {
                 }
                 
                 await exec.exec('git', ['commit', '-m', 'Tweak: Update package versions']);
-                
-                await exec.exec('git', ['push', 'origin', 'HEAD:main']);
+                await exec.exec( 'git', ['remote', '-v']);
                 
                 core.info(`Successfully committed changes to main branch`);
             } catch (error) {

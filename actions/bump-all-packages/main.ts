@@ -54,7 +54,9 @@ export async function run() {
                     
                     for (const dir of targetDirectories) {
                         try {
-                            const packageJsonFiles = await glob(`${dir}/**/package.json`);
+                            const packageJsonFiles = await glob(`${dir}/**/package.json`, {
+                                ignore: ['**/node_modules/**']
+                            });
                             
                             for (const packageJsonPath of packageJsonFiles) {                                
                                 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
@@ -68,7 +70,6 @@ export async function run() {
                     
                     if (packageNames.length > 0) {
                         core.info(`Found ${packageNames.length} packages to bump in target directories`);
-                        
                         
                         await exec.exec('npx', ['changeset', 'add', '--bump', 'major', '--packages', ...packageNames, '-s', "Bump packages major version"]);
                         

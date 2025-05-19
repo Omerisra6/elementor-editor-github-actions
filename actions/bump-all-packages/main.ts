@@ -45,7 +45,7 @@ export async function run() {
                     
                     for (const dir of targetDirectories) {
                         try {
-                            const packageJsonFiles = await glob(`packages/${dir}/**/package.json`);
+                            const packageJsonFiles = await glob(`${dir}/**/package.json`);
                             
                             for (const packageJsonPath of packageJsonFiles) {                                
                                 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));

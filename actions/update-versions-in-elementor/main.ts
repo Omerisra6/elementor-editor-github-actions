@@ -3,7 +3,7 @@ import * as github from '@actions/github';
 import { getArrayInput, getStringInput } from '@elementor-editor-github-actions/utils';
 import { z } from 'zod';
 import * as fs from 'fs/promises';
-import exec from '@actions/exec';
+import * as exec from '@actions/exec';
 
 const PACKAGES_OWNER = 'Omerisra6';
 const PACKAGES_REPO = 'elementor-packages-test';
@@ -50,6 +50,11 @@ export async function run() {
             }
 
             return versions;
+        });
+
+        await core.group('Setting up git configuration', async () => {
+            await exec.exec('git', ['config', 'user.name', 'GitHub Actions']);
+            await exec.exec('git', ['config', 'user.email', internalBotEmail]);
         });
 
         let hasUpdates = false;

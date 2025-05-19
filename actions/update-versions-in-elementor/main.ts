@@ -98,9 +98,6 @@ export async function run() {
             } catch (error) {
                 throw new Error(`Failed to install dependencies: ${error}`);
             }
-
-            corePackageJsonContent = Buffer.from(data.content, data.encoding as BufferEncoding).toString();
-            core.info('Successfully fetched core package.json');
         });
 
         await core.group('Committing changes to repository', async () => {
@@ -122,13 +119,6 @@ export async function run() {
             } catch (error) {
                 throw new Error(`Failed to commit changes: ${error}`);
             }
-
-            if (!hasUpdates) {
-                core.info('No packages needed to be updated in core package.json');
-                return;
-            }
-
-            core.info('Updated core package.json with new versions');
         });
 
         core.info('✅ Successfully updated package versions in the repository');

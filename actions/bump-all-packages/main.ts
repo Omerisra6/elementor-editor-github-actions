@@ -41,9 +41,9 @@ export async function run() {
         await core.group('Installing dependencies', async () => {
             try {
                 await exec.exec('npm', ['install']);
-                core.info('Successfully installed @changesets/cli');
+                core.info('Successfully installed dependencies');
             } catch (error) {
-                throw new Error(`Failed to install @changesets/cli: ${error}`);
+                throw new Error(`Failed to install dependencies: ${error}`);
             }
         });
         
@@ -71,8 +71,29 @@ export async function run() {
                     if (packageNames.length > 0) {
                         core.info(`Found ${packageNames.length} packages to bump in target directories`);
                         
-                        await exec.exec('npx', ['changeset', 'add', '--bump', 'major', '--packages', ...packageNames, '-s', "Bump packages major version"]);
+                        const changesetId = Math.random().toString(36).substring(2, 12);
+                        const changesetDir = '.changeset';
                         
+                        if (!fs.existsSync(changesetDir)) {
+                            fs.mkdirSync(changesetDir, { recursive: true });
+                        }
+                        
+                        const changesetContent: { 
+                            major: string[];
+                            minor: string[];
+                            patch: string[];
+                        } = {
+                            "major": packageNames,
+                            "minor": [],
+                            "patch": []
+                        };
+                        
+                        const changesetFilePath = `${changesetDir}/${changesetId}.md`;
+                        const fileContent = `---\n${JSON.stringify(changesetContent, null, 2)}\n---\n\nBump packages major version\n`;
+                        
+                        fs.writeFileSync(changesetFilePath, fileContent);
+                        core.info(`Created changeset file: ${changesetFilePath}`);
+                                                
                         core.info('Successfully bumped versions using changesets with major strategy');
                     } else {
                         core.warning('No packages found in target directories');
